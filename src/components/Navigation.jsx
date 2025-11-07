@@ -1,109 +1,97 @@
 // @ts-ignore;
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 // @ts-ignore;
-import { Button, LanguageSwitcher } from '@/components/ui';
+import { Menu, X, Globe, Search } from 'lucide-react';
 // @ts-ignore;
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Button } from '@/components/ui';
 
-// @ts-ignore;
-import { useLanguage } from '@/components/LanguageContext';
-export const Navigation = ({
+export function Navigation({
   currentPage,
   onNavigate
-}) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const {
-    t
-  } = useLanguage();
+}) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [currentLang, setCurrentLang] = useState('中文');
   const navItems = [{
     id: 'home',
-    label: t('nav.home'),
-    href: '/'
+    label: '首页'
   }, {
     id: 'products',
-    label: t('nav.products'),
-    href: '/products'
+    label: '产品中心'
   }, {
     id: 'solutions',
-    label: t('nav.solutions'),
-    href: '/solutions'
+    label: '技术方案'
   }, {
     id: 'news',
-    label: t('nav.news'),
-    href: '/news'
-  }, {
-    id: 'about',
-    label: t('nav.about'),
-    href: '/about'
-  }, {
-    id: 'contact',
-    label: t('nav.contact'),
-    href: '/contact'
+    label: '新闻资讯'
   }, {
     id: 'careers',
-    label: t('nav.careers'),
-    href: '/careers'
+    label: '人才招聘'
+  }, {
+    id: 'about',
+    label: '关于我们'
+  }, {
+    id: 'contact',
+    label: '联系我们'
   }];
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
   const handleNavClick = pageId => {
     onNavigate(pageId);
-    setIsMenuOpen(false);
+    setIsMobileMenuOpen(false);
   };
-  return <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md' : 'bg-white/95 backdrop-blur-sm'}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <button onClick={() => handleNavClick('home')} className="flex items-center">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white font-bold text-lg">G</span>
+  return <nav className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              {/* Logo */}
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <h1 className="text-xl font-bold text-blue-900">江苏镓宏半导体</h1>
+                </div>
               </div>
-              <span className="text-xl font-bold text-gray-900">镓宏半导体</span>
-            </button>
-          </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navItems.map(item => <button key={item.id} onClick={() => handleNavClick(item.id)} className={`text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors ${currentPage === item.id ? 'text-blue-600 border-b-2 border-blue-600' : ''}`}>
-                {item.label}
-              </button>)}
-          </nav>
+              {/* Desktop Navigation */}
+              <div className="hidden md:block">
+                <div className="ml-10 flex items-baseline space-x-4">
+                  {navItems.map(item => <button key={item.id} onClick={() => handleNavClick(item.id)} className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${currentPage === item.id ? 'bg-gray-700 text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'}`}>
+                      {item.label}
+                    </button>)}
+                </div>
+              </div>
 
-          {/* Right side items */}
-          <div className="flex items-center space-x-4">
-            {/* Language Switcher */}
-            <div className="hidden sm:block">
-              <LanguageSwitcher />
-            </div>
+              {/* Right side actions */}
+              <div className="hidden md:flex items-center space-x-4">
+                <Button variant="ghost" size="sm" className="text-gray-700">
+                  <Search className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setCurrentLang(currentLang === '中文' ? 'EN' : '中文')} className="text-gray-700">
+                  <Globe className="h-4 w-4 mr-1" />
+                  {currentLang}
+                </Button>
+              </div>
 
-            {/* Mobile menu button */}
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100">
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
-              {navItems.map(item => <button key={item.id} onClick={() => handleNavClick(item.id)} className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors ${currentPage === item.id ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'}`}>
-                  {item.label}
-                </button>)}
-              
-              {/* Mobile Language Switcher */}
-              <div className="px-3 py-2 border-t border-gray-200 mt-2">
-                <div className="text-sm text-gray-500 mb-2">{t('common.language')}</div>
-                <LanguageSwitcher />
+              {/* Mobile menu button */}
+              <div className="md:hidden">
+                <Button variant="ghost" size="sm" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                  {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </Button>
               </div>
             </div>
-          </div>}
-      </div>
-    </header>;
-};
+          </div>
+
+          {/* Mobile menu */}
+          {isMobileMenuOpen && <div className="md:hidden">
+              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
+                {navItems.map(item => <button key={item.id} onClick={() => handleNavClick(item.id)} className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left ${currentPage === item.id ? 'bg-gray-700 text-white' : 'text-gray-700 hover:bg-gray-100'}`}>
+                    {item.label}
+                  </button>)}
+                <div className="flex items-center space-x-4 px-3 py-2 border-t mt-2 pt-4">
+                  <Button variant="ghost" size="sm" className="text-gray-700">
+                    <Search className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => setCurrentLang(currentLang === '中文' ? 'EN' : '中文')} className="text-gray-700">
+                    <Globe className="h-4 w-4 mr-1" />
+                    {currentLang}
+                  </Button>
+                </div>
+              </div>
+            </div>}
+        </nav>;
+}

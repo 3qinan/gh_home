@@ -7,5 +7,3 @@ export * from './CompanyOverview.jsx';
 export * from './CompanyTimeline.jsx';
 export * from './ManagementTeam.jsx';
 export * from './ContactMap.jsx';
-export * from './LanguageContext.jsx';
-export * from './LanguageSwitcher.jsx';
