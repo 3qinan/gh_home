@@ -7,7 +7,7 @@ import { ArrowRight, Play, CheckCircle, Globe, Users, Award, TrendingUp, ArrowUp
 
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { LanguageProvider } from '@/components/LanguageContext';
+import { LanguageProvider, useLanguage } from '@/components/LanguageContext';
 export default function Home(props) {
   const {
     $w
