@@ -8,7 +8,9 @@ import { ArrowRight, Play, CheckCircle, Globe, Users, Award, TrendingUp, ArrowUp
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { LanguageProvider, useLanguage } from '@/components/LanguageContext';
-export default function Home(props) {
+
+// 内部组件，使用语言上下文
+const HomeContent = props => {
   const {
     $w
   } = props;
@@ -131,245 +133,250 @@ export default function Home(props) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  return <LanguageProvider>
-      <div className="min-h-screen bg-gray-50">
-        <Navigation currentPage="home" onNavigate={handleNavigate} />
+  return <div className="min-h-screen bg-gray-50">
+      <Navigation currentPage="home" onNavigate={handleNavigate} />
+      
+      {/* Hero Section */}
+      <div className="relative h-96 md:h-[600px] overflow-hidden">
+        <div className="absolute inset-0">
+          {heroSlides.map((slide, index) => <div key={index} className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}>
+              <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-blue-700/80"></div>
+            </div>)}
+        </div>
         
-        {/* Hero Section */}
-        <div className="relative h-96 md:h-[600px] overflow-hidden">
-          <div className="absolute inset-0">
-            {heroSlides.map((slide, index) => <div key={index} className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}>
-                <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-blue-700/80"></div>
-              </div>)}
+        <div className="relative z-10 h-full flex items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center text-white">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
+                {heroSlides[currentSlide].title}
+              </h1>
+              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto animate-fade-in-delay">
+                {heroSlides[currentSlide].subtitle}
+              </p>
+              <div className="flex justify-center gap-4 animate-fade-in-delay-2">
+                <Button className="bg-white text-blue-900 hover:bg-gray-100 px-8 py-3" onClick={() => handleNavigate('about')}>
+                  {t('home.hero.learnMore')}
+                </Button>
+                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-900 px-8 py-3" onClick={() => handleNavigate('contact')}>
+                  {t('home.hero.contactUs')}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Slide Indicators */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2">
+          {heroSlides.map((_, index) => <button key={index} onClick={() => setCurrentSlide(index)} className={`w-3 h-3 rounded-full transition-colors ${index === currentSlide ? 'bg-white' : 'bg-white/50'}`} />)}
+        </div>
+
+        {/* Navigation Arrows */}
+        <button onClick={prevSlide} className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button onClick={nextSlide} className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Products Section */}
+      <div className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{t('home.products.title')}</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t('home.products.subtitle')}</p>
           </div>
           
-          <div className="relative z-10 h-full flex items-center">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center text-white">
-                <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
-                  {heroSlides[currentSlide].title}
-                </h1>
-                <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto animate-fade-in-delay">
-                  {heroSlides[currentSlide].subtitle}
-                </p>
-                <div className="flex justify-center gap-4 animate-fade-in-delay-2">
-                  <Button className="bg-white text-blue-900 hover:bg-gray-100 px-8 py-3" onClick={() => handleNavigate('about')}>
-                    {t('home.hero.learnMore')}
-                  </Button>
-                  <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-900 px-8 py-3" onClick={() => handleNavigate('contact')}>
-                    {t('home.hero.contactUs')}
-                  </Button>
-                </div>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {products.map(product => <Card key={product.id} className="group hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleNavigate('productDetail', {
+            productId: product.id
+          })}>
+                <CardContent className="p-6">
+                  <div className="aspect-w-16 aspect-h-12 mb-4">
+                    <img src={product.image} alt={product.name} className="w-full h-48 object-cover rounded-lg" />
+                  </div>
+                  <div className="mb-2">
+                    <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+                      {product.category}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    {product.name}
+                  </h3>
+                  <p className="text-gray-600 mb-4">{product.description}</p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {product.features.map((feature, index) => <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
+                        {feature}
+                      </span>)}
+                  </div>
+                  <div className="flex items-center text-blue-600 group-hover:text-blue-700">
+                    <span className="text-sm font-medium">{t('home.products.viewAll')}</span>
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </CardContent>
+              </Card>)}
           </div>
-
-          {/* Slide Indicators */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2">
-            {heroSlides.map((_, index) => <button key={index} onClick={() => setCurrentSlide(index)} className={`w-3 h-3 rounded-full transition-colors ${index === currentSlide ? 'bg-white' : 'bg-white/50'}`} />)}
-          </div>
-
-          {/* Navigation Arrows */}
-          <button onClick={prevSlide} className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button onClick={nextSlide} className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Products Section */}
-        <div className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{t('home.products.title')}</h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t('home.products.subtitle')}</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {products.map(product => <Card key={product.id} className="group hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleNavigate('productDetail', {
-              productId: product.id
-            })}>
-                  <CardContent className="p-6">
-                    <div className="aspect-w-16 aspect-h-12 mb-4">
-                      <img src={product.image} alt={product.name} className="w-full h-48 object-cover rounded-lg" />
-                    </div>
-                    <div className="mb-2">
-                      <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
-                        {product.category}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                      {product.name}
-                    </h3>
-                    <p className="text-gray-600 mb-4">{product.description}</p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {product.features.map((feature, index) => <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
-                          {feature}
-                        </span>)}
-                    </div>
-                    <div className="flex items-center text-blue-600 group-hover:text-blue-700">
-                      <span className="text-sm font-medium">{t('home.products.viewAll')}</span>
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </CardContent>
-                </Card>)}
-            </div>
-            
-            <div className="text-center mt-8">
-              <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => handleNavigate('products')}>
-                {t('home.products.viewAll')}
-              </Button>
-            </div>
+          
+          <div className="text-center mt-8">
+            <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => handleNavigate('products')}>
+              {t('home.products.viewAll')}
+            </Button>
           </div>
         </div>
-
-        {/* Solutions Section */}
-        <div className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{t('home.solutions.title')}</h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t('home.solutions.subtitle')}</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {solutions.map(solution => <Card key={solution.id} className="group hover:shadow-lg transition-all cursor-pointer" onClick={() => handleNavigate('solutions')}>
-                  <CardContent className="p-6 text-center">
-                    <div className="text-4xl mb-4">{solution.icon}</div>
-                    <img src={solution.image} alt={solution.title} className="w-full h-32 object-cover rounded-lg mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                      {solution.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-4">{solution.description}</p>
-                    <div className="flex items-center justify-center text-blue-600 group-hover:text-blue-700">
-                      <span className="text-sm font-medium">{t('home.solutions.learnMore')}</span>
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </CardContent>
-                </Card>)}
-            </div>
-          </div>
-        </div>
-
-        {/* News Section */}
-        <div className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{t('home.news.title')}</h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t('home.news.subtitle')}</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {news.map(item => <Card key={item.id} className="group hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleNavigate('newsDetail', {
-              newsId: item.id
-            })}>
-                  <CardContent className="p-6">
-                    <div className="aspect-w-16 aspect-h-12 mb-4">
-                      <img src={item.image} alt={item.title} className="w-full h-48 object-cover rounded-lg" />
-                    </div>
-                    <div className="mb-2">
-                      <span className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
-                        {item.category}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-600 mb-4 line-clamp-3">{item.summary}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">{item.date}</span>
-                      <div className="flex items-center text-blue-600 group-hover:text-blue-700">
-                        <span className="text-sm font-medium">{t('home.news.readMore')}</span>
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>)}
-            </div>
-            
-            <div className="text-center mt-8">
-              <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white" onClick={() => handleNavigate('news')}>
-                {t('home.news.viewAll')}
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Advantages Section */}
-        <div className="py-16 bg-gradient-to-r from-blue-900 to-blue-700 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('home.advantages.title')}</h2>
-              <p className="text-xl text-blue-100 max-w-2xl mx-auto">{t('home.advantages.subtitle')}</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Globe className="h-8 w-8" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{t('home.advantages.items.technology.title')}</h3>
-                <p className="text-blue-100">{t('home.advantages.items.technology.description')}</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="h-8 w-8" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{t('home.advantages.items.quality.title')}</h3>
-                <p className="text-blue-100">{t('home.advantages.items.quality.description')}</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="h-8 w-8" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{t('home.advantages.items.service.title')}</h3>
-                <p className="text-blue-100">{t('home.advantages.items.service.description')}</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <TrendingUp className="h-8 w-8" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{t('home.advantages.items.capacity.title')}</h3>
-                <p className="text-blue-100">{t('home.advantages.items.capacity.description')}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="py-16 bg-gray-50">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              准备好开始合作了吗？
-            </h2>
-            <p className="text-xl text-gray-600 mb-8">
-              联系我们的专业团队，获取定制化的功率半导体解决方案
-            </p>
-            <div className="flex justify-center gap-4">
-              <Button className="bg-blue-600 hover:bg-blue-700 px-8 py-3" onClick={() => handleNavigate('contact')}>
-                {t('home.hero.contactUs')}
-              </Button>
-              <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3" onClick={() => handleNavigate('products')}>
-                {t('home.products.viewAll')}
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Back to Top Button */}
-        {showBackToTop && <button onClick={scrollToTop} className="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors z-50">
-            <ArrowUp className="h-6 w-6" />
-          </button>}
-
-        <Footer />
       </div>
+
+      {/* Solutions Section */}
+      <div className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{t('home.solutions.title')}</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t('home.solutions.subtitle')}</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {solutions.map(solution => <Card key={solution.id} className="group hover:shadow-lg transition-all cursor-pointer" onClick={() => handleNavigate('solutions')}>
+                <CardContent className="p-6 text-center">
+                  <div className="text-4xl mb-4">{solution.icon}</div>
+                  <img src={solution.image} alt={solution.title} className="w-full h-32 object-cover rounded-lg mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    {solution.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-4">{solution.description}</p>
+                  <div className="flex items-center justify-center text-blue-600 group-hover:text-blue-700">
+                    <span className="text-sm font-medium">{t('home.solutions.learnMore')}</span>
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </CardContent>
+              </Card>)}
+          </div>
+        </div>
+      </div>
+
+      {/* News Section */}
+      <div className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{t('home.news.title')}</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t('home.news.subtitle')}</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {news.map(item => <Card key={item.id} className="group hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleNavigate('newsDetail', {
+            newsId: item.id
+          })}>
+                <CardContent className="p-6">
+                  <div className="aspect-w-16 aspect-h-12 mb-4">
+                    <img src={item.image} alt={item.title} className="w-full h-48 object-cover rounded-lg" />
+                  </div>
+                  <div className="mb-2">
+                    <span className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
+                      {item.category}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 line-clamp-3">{item.summary}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500">{item.date}</span>
+                    <div className="flex items-center text-blue-600 group-hover:text-blue-700">
+                      <span className="text-sm font-medium">{t('home.news.readMore')}</span>
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>)}
+          </div>
+          
+          <div className="text-center mt-8">
+            <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white" onClick={() => handleNavigate('news')}>
+              {t('home.news.viewAll')}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Advantages Section */}
+      <div className="py-16 bg-gradient-to-r from-blue-900 to-blue-700 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('home.advantages.title')}</h2>
+            <p className="text-xl text-blue-100 max-w-2xl mx-auto">{t('home.advantages.subtitle')}</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Globe className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">{t('home.advantages.items.technology.title')}</h3>
+              <p className="text-blue-100">{t('home.advantages.items.technology.description')}</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">{t('home.advantages.items.quality.title')}</h3>
+              <p className="text-blue-100">{t('home.advantages.items.quality.description')}</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">{t('home.advantages.items.service.title')}</h3>
+              <p className="text-blue-100">{t('home.advantages.items.service.description')}</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">{t('home.advantages.items.capacity.title')}</h3>
+              <p className="text-blue-100">{t('home.advantages.items.capacity.description')}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="py-16 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            准备好开始合作了吗？
+          </h2>
+          <p className="text-xl text-gray-600 mb-8">
+            联系我们的专业团队，获取定制化的功率半导体解决方案
+          </p>
+          <div className="flex justify-center gap-4">
+            <Button className="bg-blue-600 hover:bg-blue-700 px-8 py-3" onClick={() => handleNavigate('contact')}>
+              {t('home.hero.contactUs')}
+            </Button>
+            <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3" onClick={() => handleNavigate('products')}>
+              {t('home.products.viewAll')}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Back to Top Button */}
+      {showBackToTop && <button onClick={scrollToTop} className="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors z-50">
+          <ArrowUp className="h-6 w-6" />
+        </button>}
+
+      <Footer />
+    </div>;
+};
+
+// 主组件，用LanguageProvider包裹
+export default function Home(props) {
+  return <LanguageProvider>
+      <HomeContent {...props} />
     </LanguageProvider>;
 }
