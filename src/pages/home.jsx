@@ -9,11 +9,10 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { LanguageProvider, useLanguage } from '@/components/LanguageContext';
 
-// 内部组件，使用语言上下文
-const HomeContent = props => {
-  const {
-    $w
-  } = props;
+// 将 HomeContent 拆分为独立组件，确保在 LanguageProvider 内部
+function HomeContent({
+  $w
+}) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const {
@@ -372,11 +371,12 @@ const HomeContent = props => {
 
       <Footer />
     </div>;
-};
-
-// 主组件，用LanguageProvider包裹
+}
 export default function Home(props) {
+  const {
+    $w
+  } = props;
   return <LanguageProvider>
-      <HomeContent {...props} />
+      <HomeContent $w={$w} />
     </LanguageProvider>;
 }
